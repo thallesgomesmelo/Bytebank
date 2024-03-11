@@ -1,9 +1,10 @@
-const elementSaldo = document.querySelector(".saldo-valor .valor") as HTMLElement;
+import { Transacao } from "../types/Transacao.js";
+import { TipoTransacao } from "../types/TipoTransacao.js";
+import { atualizarSaldo, getSaldo } from "./saldo-component.js";
+
 const elementForm = document.querySelector(
   ".block-nova-transacao form"
 ) as HTMLFormElement;
-
-let saldo = 3000;
 
 elementForm.addEventListener("submit", event => {
   /**
@@ -23,15 +24,16 @@ elementForm.addEventListener("submit", event => {
   const inputValor = elementForm.querySelector("#valor") as HTMLInputElement;
   const inputData = elementForm.querySelector("#data") as HTMLInputElement;
 
-  let tipoTransacao: string = inputTipoTransacao.value;
+  let tipoTransacao: TipoTransacao = inputTipoTransacao.value as TipoTransacao;
   let valor: number = inputValor.valueAsNumber;
   let data: Date = new Date(inputData.value);
+  let saldo: number = getSaldo();
 
-  if (tipoTransacao === "Depósito") {
+  if (tipoTransacao === TipoTransacao.DEPOSITO) {
     saldo += valor;
   } else if (
-    tipoTransacao === "Transferência" ||
-    tipoTransacao === "Pagamento de Boleto"
+    tipoTransacao === TipoTransacao.TRANSFERENCIA ||
+    tipoTransacao === TipoTransacao.PAGAMENTO_BOLETO
   ) {
     saldo -= valor;
   } else {
@@ -39,10 +41,10 @@ elementForm.addEventListener("submit", event => {
     return;
   }
 
-  elementSaldo.textContent = saldo.toString();
+  atualizarSaldo(saldo);
 
-  const novaTransacao = {
-    tipo: tipoTransacao,
+  const novaTransacao: Transacao = {
+    tipoTransacao: tipoTransacao,
     valor: valor,
     data: data
   };
